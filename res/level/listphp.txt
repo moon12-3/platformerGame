@@ -1,0 +1,47 @@
+<?php
+include('db_conn.php');
+
+$sel = "select * from bbs order by id desc";
+
+$a = mysqli_query($conn, $sel);
+
+$count = mysqli_num_rows($a);
+
+for($i = 0; $i<$count; $i++) {
+    $re = mysqli_fetch_row($a);
+    echo "<p><table class='table table-condensed'>
+    <thead>
+        <tr align='center'>
+            <th>제목 : </th>
+            <th width='auto'>$re[3]</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>작성일
+            </td>
+            <td>
+                $re[5]
+            </td>
+        </tr>
+        <tr>
+            <td>글쓴이
+            </td>
+            <td>
+            $re[1]
+            </td>
+        </tr>
+        <tr>
+            <td colspan='2'>
+                <p>$re[4]</p>
+   
+            </td>
+        </tr>
+    </tbody>
+</table>
+<hr/>";
+}
+
+mysqli_close($conn);
+
+?>
