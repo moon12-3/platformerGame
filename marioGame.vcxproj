@@ -19,17 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="DrawMap.cpp" />
+    <ClCompile Include="GameTile.cpp" />
+    <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Coin.hpp" />
     <ClInclude Include="Collider.hpp" />
-    <ClInclude Include="DrawMap.hpp" />
+    <ClInclude Include="GameTile.hpp" />
+    <ClInclude Include="GameWorld.hpp" />
     <ClInclude Include="Global.hpp" />
-    <ClInclude Include="Platform.hpp" />
     <ClInclude Include="Player.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

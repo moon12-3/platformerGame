@@ -14,61 +14,96 @@ Player::Player() :
 	onGround(false)
 {
 	texture.loadFromFile("Resources/Images/Player.png");
-	playerFaceRight = true;
-	sprite.setOrigin(Vector2f(CELL_SIZE, CELL_SIZE) / 2.0f);
-	sprite.setTexture(texture);
+	// textureSize = texture.getSize();
+	sprite.setSize(Vector2f(CELL_SIZE, CELL_SIZE));
+	// sprite.setOrigin(Vector2f(CELL_SIZE, CELL_SIZE) / 2.0f);
+	sprite.setTexture(&texture);
 
 	fps = game_clock.restart().asMilliseconds();
 
 	sprite.setPosition(round(x), round(y));
 }
 
-void Player::draw(sf::RenderWindow& i_window, int n, Sprite* block)
+void Player::draw(sf::RenderWindow& i_window)
 {
 	i_window.draw(sprite);
 
-	update(n, block);
+	drawTo();
 
-	sprite.setPosition(Vector2f(x, y));
+	//update();
+
+	//sprite.setPosition(Vector2f(x, y));
 }
 
-void Player::update(int n, Sprite* block) {
-	if (Keyboard::isKeyPressed(Keyboard::LShift)) x_speed = SPEED * 2;
-	else x_speed = SPEED;
-	 
-	if (Keyboard::isKeyPressed(Keyboard::Z)) {
+void Player::update(float deltaTime) {
+	velocity.x *= 0.0f;
+	
 
+	if (Keyboard::isKeyPressed(Keyboard::Left))
+		velocity.x -= SPEED;
+	if (Keyboard::isKeyPressed(Keyboard::Right))
+		velocity.x += SPEED;
+	if (Keyboard::isKeyPressed(Keyboard::Space) && canJump) {
+		canJump = false;
+		velocity.y = -sqrtf(2.0f * GRAVITY * jumpHeight);
+		// square root (2.0f * gravity * jumpHeight);
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::Right)) {
-		x += x_speed * fps;
-		playerFaceRight = true;
+	velocity.y += GRAVITY * deltaTime;
+
+	if (velocity.x == 0.0f) {
+		row = 0;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Left)) {
-		x -= x_speed * fps;
-		playerFaceRight = false;
+	else {
+		row = 1;
+
+		if (velocity.x > 0.0f) faceRight = true;
+		else faceRight = false;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Up)) {
-		y -= x_speed * fps;
+
+	sprite.move(velocity * deltaTime);
+}
+
+bool Player::isCollidingWithCoin(Coin* coin)
+{
+	if (sprite.getGlobalBounds().intersects(coin->getGlobalBounds())) {
+		return true;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Down)) {
-		y += x_speed * fps;
-	}
+	return false;
+}
+
+void Player::drawTo()
+{
 	if (Keyboard::isKeyPressed(Keyboard::Space)) {
-		y -= 25;
+		if (onGround && !isJumping) {
+			isJumping = true;
+			onGround = false;
+		}
 	}
-	// glitch alert!
+		
+	if (Keyboard::isKeyPressed(Keyboard::Right)) {
+		sprite.move(Vector2f(SPEED, 0));
+	} 
+	else if (Keyboard::isKeyPressed(Keyboard::Left) && sprite.getPosition().x>=0) {
+		sprite.move(Vector2f(-SPEED, 0));
+	}
+	/*else if (Keyboard::isKeyPressed(Keyboard::Up) && sprite.getPosition().x >= 0) {
+		sprite.move(Vector2f(0, -SPEED));
+	}
+	else if (Keyboard::isKeyPressed(Keyboard::Down) && sprite.getPosition().x >= 0) {
+		sprite.move(Vector2f(0, SPEED));
+	}*/
+	if (!onGround && isJumping == false) {
+		sprite.move(0, GRAVITY);
+	}
+	else if (onGround) {
+		sprite.move(0, 0);
+		// canJump = true;
+	}
 	onGround = false;
-	for (int i = 0; i < n; i++) {
-		if (isCollide(sprite, block[i])) onGround = true;
-	}
-
-	if (onGround) vertical_speed = 0;
-	else vertical_speed += GRAVITY;
-
-	y += vertical_speed;
+	
 }
 
-bool Player::isCollide(Sprite s1, Sprite s2) {	//물체의 충돌을 감지
-	return s1.getGlobalBounds().intersects(s2.getGlobalBounds());
+void Player::move()
+{
 }

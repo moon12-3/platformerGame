@@ -1,11 +1,21 @@
+#pragma once
+
 #include"Player.hpp"
-#include"DrawMap.hpp"
 #include"Global.hpp"
+#include"Collider.hpp"
+#include"Platform.hpp"
+#include<iostream>
+#include "Coin.hpp"
+#include"GameTile.hpp"
+#include"GameWorld.hpp"
 
 using namespace sf;
 
 Clock dtClock;
 float dt;
+float interval = 0;
+int minute = 0;
+int score = 0;
 
 void ResizeView(RenderWindow& app, View& view)	// 화면 크기 변경 시 조절
 {
@@ -14,48 +24,51 @@ void ResizeView(RenderWindow& app, View& view)	// 화면 크기 변경 시 조절
 }
 
 int main() {
-	RenderWindow app(VideoMode(WIDTH, HEIGHT), "platformer");
+	RenderWindow app(VideoMode(WIDTH, HEIGHT), "platformer", Style::Titlebar | Style::Close);
 	View view(Vector2f(0.0f, 0.0f), Vector2f(WIDTH, HEIGHT));
 	app.setFramerateLimit(60);
 
 	Texture map_texture;
 	map_texture.loadFromFile("Resources/Images/block.png");
-	//Sprite tile(map_texture);
-	//tile.setPosition(CELL_SIZE, CELL_SIZE * 11);
 
-
-	Sprite block[200];
-	int n = 0; // 벽돌갯수
-	for (int i = 10; i < 12; i++) {
-		for (int j = 0; j < 16; j++) {
-			block[n].setTexture(map_texture);
-			block[n].setPosition(CELL_SIZE * j, CELL_SIZE * i);
-			n++;
-		}
-	}
-
-	Map map(HEIGHT / CELL_SIZE);
-
+	// PlayerW
 	Player player;
+	// Coin
+	vector<Coin*> coinVec;
+	Coin coin1(Vector2f(20, 20));
+	Coin coin2(Vector2f(20, 20));
+	coinVec.push_back(&coin1);
+	coinVec.push_back(&coin2);
 
-	DrawMap d;
+	coin1.setPos(Vector2f(50, 410));
+	coin2.setPos(Vector2f(150, 410));
 
-	for (unsigned short a = 0; a < map.size(); a++) {	// 12
-		for (unsigned short b = map[a].size() + 4; b < map[a].size(); b++) {	// 16
-			map[a][b] = Cell::Wall;
-		}
-	}
-
-	
+	// Map
+	GameWorld gameWorld = GameWorld(&player);
 
 	Font font;
 	font.loadFromFile("Resources/Fonts/DungGeunMo.ttf");
 
-	Text text("Hello Platformer!", font, 50);
+	Text text("00:00", font, 50);
+	text.setFont(font);
 
+	ostringstream ssScore;
+	ssScore << "Score : " << score;
+
+	Text lblScore;
+	lblScore.setCharacterSize(30);
+	lblScore.setPosition(50, 200);
+	lblScore.setFont(font);
+	lblScore.setString(ssScore.str());
 
 	while (app.isOpen()) {
 		Event e;
+		float time = dtClock.getElapsedTime().asSeconds();
+		Time elapsed = dtClock.restart();
+		interval += time;
+		string t = std::to_string((int)interval)+"s";
+		text.setString(t);
+
 		while (app.pollEvent(e)) {
 			switch (e.type)
 			{
@@ -69,14 +82,27 @@ int main() {
 		}
 
 		app.setView(view);
-		view.setCenter(player.getPosition());
+		text.setPosition(50, 50);
+		if(player.getPositionX()<=WIDTH * 0.5) view.setCenter(WIDTH * 0.5, HEIGHT * 0.5);
+		else view.setCenter(player.getPositionX(), HEIGHT * 0.5);
+
+		for (int i = 0; i < coinVec.size(); i++) {
+			if (player.isCollidingWithCoin(coinVec[i])) {
+				coinVec[i]->setPos(Vector2f(40000, 40000));
+				score++;
+				ssScore.str("");
+				ssScore << "Score : " << score;
+				lblScore.setString(ssScore.str());
+			}
+		}
 
 		app.clear(Color(98, 172, 255));
-		// app.draw(tile);
-		for (int i = 0; i < n; i++)
-			app.draw(block[i]);
-		// d.draw_map(app, map_texture, map);
-		player.draw(app, n, block);
+		gameWorld.draw(app);
+		app.draw(text);
+		coin1.draw(app);
+		coin2.draw(app);
+		app.draw(lblScore);
+		player.draw(app);
 
 		app.display();
 

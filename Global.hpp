@@ -5,6 +5,8 @@
 
 #define WIDTH 800
 #define HEIGHT 600
+#define W 32
+#define H 12
 
 using namespace std;
 
@@ -19,7 +21,7 @@ constexpr chrono::microseconds FRAM_DURATION(16667);
 
 enum Cell {
 	Empty,
-	Wall
+	Ground
 };
 
 typedef vector<std::array<Cell, SCREEN_HEIGHT / CELL_SIZE>> Map;
