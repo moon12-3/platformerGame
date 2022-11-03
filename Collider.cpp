@@ -23,7 +23,7 @@ bool Collider::CheckCollision(Collider& other, Vector2f& direction, float push) 
 		push = std::min(std::max(push, 0.0f), 1.0f);
 
 		if (intersectX > intersectY) {
-			if (deltaX > 0.0f) {
+			if (deltaX > 1.0f) {
 				Move(intersectX * (1.0f - push), 0.0f);
 				other.Move(-intersectX * push, 0.0f);
 

@@ -36,14 +36,20 @@ void GameWorld::setUpTiles() {
 
 void GameWorld::draw(RenderWindow& app)
 {
+
 	for (int i = 0; i < H; i++) {
 		for (int j = 0; j < W; j++) {
 			app.draw(tiles[i][j]->block);
 			Collider c = p->getCollider();
-			if (p->sprite.getGlobalBounds().intersects(tiles[i][j]->getGlobalBounds()) && !(tiles[i][j]->tileType == '0')) {
-				tiles[i][j]->GetCollider().CheckCollision(c, 1.0f);
-				p->onGround = true;
-				p->isJumping = false;
+			Vector2f direction;
+			if (p->sprite.getGlobalBounds().intersects(tiles[i][j]->getGlobalBounds()) && !(tiles[i][j]->tileType == '0') && !(tiles[i][j]->tileType >= 'a')) {
+				if (tiles[i][j]->GetCollider().CheckCollision(c, direction, 1.0f))
+					p->onCollision(direction);
+				// tiles[i][j]->GetCollider().CheckCollision(c, 1.0f);
+				if (p->sprite.getPosition().y < tiles[i][j]->block.getPosition().y - 40) {
+					p->onGround = true;
+					p->isJumping = false;
+				}
 			}
 		}
 	}

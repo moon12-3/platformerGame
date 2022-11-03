@@ -19,11 +19,3 @@ constexpr unsigned char SCREEN_WIDTH = 800;
 constexpr chrono::microseconds FRAM_DURATION(16667);
 
 
-enum Cell {
-	Empty,
-	Ground
-};
-
-typedef vector<std::array<Cell, SCREEN_HEIGHT / CELL_SIZE>> Map;
-
-

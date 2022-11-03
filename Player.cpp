@@ -9,47 +9,57 @@ using namespace std;
 Player::Player() :
 	x(WIDTH*0.5-CELL_SIZE/2),
 	y(HEIGHT*0.5-CELL_SIZE/2),
-	vertical_speed(0),
-	x_speed(SPEED),
-	onGround(false)
+	jumpHeight(SPEED),
+	jumpTimer(0),
+	onGround(false),
+	canJump(true),
+	faceRight(true),
+	row(0)
 {
 	texture.loadFromFile("Resources/Images/Player.png");
-	// textureSize = texture.getSize();
 	sprite.setSize(Vector2f(CELL_SIZE, CELL_SIZE));
-	// sprite.setOrigin(Vector2f(CELL_SIZE, CELL_SIZE) / 2.0f);
 	sprite.setTexture(&texture);
-
-	fps = game_clock.restart().asMilliseconds();
-
 	sprite.setPosition(round(x), round(y));
 }
 
 void Player::draw(sf::RenderWindow& i_window)
 {
+	// cout << deltaTime << endl;
+
 	i_window.draw(sprite);
 
-	drawTo();
+	update();
 
-	//update();
-
-	//sprite.setPosition(Vector2f(x, y));
+	//drawTo();
 }
 
-void Player::update(float deltaTime) {
+void Player::update() {
 	velocity.x *= 0.0f;
-	
 
 	if (Keyboard::isKeyPressed(Keyboard::Left))
 		velocity.x -= SPEED;
-	if (Keyboard::isKeyPressed(Keyboard::Right))
+	else if (Keyboard::isKeyPressed(Keyboard::Right))
 		velocity.x += SPEED;
-	if (Keyboard::isKeyPressed(Keyboard::Space) && canJump) {
-		canJump = false;
-		velocity.y = -sqrtf(2.0f * GRAVITY * jumpHeight);
-		// square root (2.0f * gravity * jumpHeight);
-	}
 
-	velocity.y += GRAVITY * deltaTime;
+	if (Keyboard::isKeyPressed(Keyboard::Up)) {
+		if (onGround) {
+			velocity.y = -JUMP_SPEED;
+			jumpTimer = JUMP_SPEED + 12;
+		}
+		else if (4 < jumpTimer) {
+			velocity.y = -JUMP_SPEED;
+			jumpTimer--;
+		}
+		else if (0 < jumpTimer) {
+			velocity.y = 1;
+			jumpTimer--;
+		}
+		else {
+			velocity.y = GRAVITY;
+		}
+	}
+	else
+		velocity.y = GRAVITY;
 
 	if (velocity.x == 0.0f) {
 		row = 0;
@@ -60,8 +70,9 @@ void Player::update(float deltaTime) {
 		if (velocity.x > 0.0f) faceRight = true;
 		else faceRight = false;
 	}
-
-	sprite.move(velocity * deltaTime);
+	onGround = false;
+	sprite.move(velocity);
+	
 }
 
 bool Player::isCollidingWithCoin(Coin* coin)
@@ -70,6 +81,27 @@ bool Player::isCollidingWithCoin(Coin* coin)
 		return true;
 	}
 	return false;
+}
+
+void Player::onCollision(Vector2f direction)
+{
+	if (direction.x < 0.0f) {
+		// Collision left
+		velocity.x = 0.0f;
+	}
+	else if (direction.x > 0.0f) {
+		// right
+		velocity.x = 0.0f;
+	}
+	if (direction.y < 0.0f) {
+		// Collision bottom
+		velocity.y = 0.0f;
+		canJump = true;
+	}
+	else if (direction.y > 0.0f) {
+		// Collision Top
+		velocity.y = 0.0f;
+	}
 }
 
 void Player::drawTo()

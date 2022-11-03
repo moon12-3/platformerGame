@@ -5,8 +5,9 @@
 #include "Coin.hpp"
 #include "GameTile.hpp"
 
-#define GRAVITY 7
+#define GRAVITY 9
 #define SPEED 7
+#define JUMP_SPEED 9
 
 using namespace sf;
 
@@ -14,12 +15,10 @@ class Player
 {
 public :
 	bool onGround;
-	float vertical_speed;
 	float x;
 	float y;
-	float x_speed;
-	float fps;
 	bool isJumping = false;
+	unsigned char jumpTimer;
 	bool canJump;
 	float jumpHeight;
 	bool faceRight;
@@ -34,7 +33,8 @@ public :
 	Player();
 
 	void draw(sf::RenderWindow& i_window);
-	void update(float deltaTime);
+	void update();
+	void onCollision(Vector2f direction);
 	bool isCollidingWithCoin(Coin* coin);
 	float getPositionX() { return sprite.getPosition().x+CELL_SIZE/2; }
 	Vector2f getPosition() { return sprite.getPosition(); }

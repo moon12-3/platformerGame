@@ -3,7 +3,6 @@
 #include"Player.hpp"
 #include"Global.hpp"
 #include"Collider.hpp"
-#include"Platform.hpp"
 #include<iostream>
 #include "Coin.hpp"
 #include"GameTile.hpp"
@@ -12,7 +11,7 @@
 using namespace sf;
 
 Clock dtClock;
-float dt;
+float deltaTime = 0.0f;
 float interval = 0;
 int minute = 0;
 int score = 0;
@@ -24,7 +23,7 @@ void ResizeView(RenderWindow& app, View& view)	// 화면 크기 변경 시 조절
 }
 
 int main() {
-	RenderWindow app(VideoMode(WIDTH, HEIGHT), "platformer", Style::Titlebar | Style::Close);
+	RenderWindow app(VideoMode(WIDTH, HEIGHT), "platformer", Style::Resize | Style::Close);
 	View view(Vector2f(0.0f, 0.0f), Vector2f(WIDTH, HEIGHT));
 	app.setFramerateLimit(60);
 
@@ -33,6 +32,7 @@ int main() {
 
 	// PlayerW
 	Player player;
+	Clock clock;
 	// Coin
 	vector<Coin*> coinVec;
 	Coin coin1(Vector2f(20, 20));
@@ -69,6 +69,8 @@ int main() {
 		string t = std::to_string((int)interval)+"s";
 		text.setString(t);
 
+		deltaTime = clock.restart().asSeconds();
+
 		while (app.pollEvent(e)) {
 			switch (e.type)
 			{
@@ -82,7 +84,7 @@ int main() {
 		}
 
 		app.setView(view);
-		text.setPosition(50, 50);
+		text.setPosition(view.getRotation(), 100);
 		if(player.getPositionX()<=WIDTH * 0.5) view.setCenter(WIDTH * 0.5, HEIGHT * 0.5);
 		else view.setCenter(player.getPositionX(), HEIGHT * 0.5);
 
@@ -95,7 +97,6 @@ int main() {
 				lblScore.setString(ssScore.str());
 			}
 		}
-
 		app.clear(Color(98, 172, 255));
 		gameWorld.draw(app);
 		app.draw(text);
