@@ -7,6 +7,8 @@
 #include "Coin.hpp"
 #include"GameTile.hpp"
 #include"GameWorld.hpp"
+#include"Enemy.hpp"
+#include<SFML/Audio.hpp>
 
 using namespace sf;
 
@@ -35,6 +37,7 @@ int main() {
 	Clock clock;
 	// Coin
 	vector<Coin*> coinVec;
+	vector<Enemy> enemy;
 	Coin coin1(Vector2f(20, 20));
 	Coin coin2(Vector2f(20, 20));
 	coinVec.push_back(&coin1);
@@ -52,12 +55,14 @@ int main() {
 	Text text("00:00", font, 50);
 	text.setFont(font);
 
+	Text HPtext("HP X "+player.hp, font, 50);
+	HPtext.setFont(font);
+
 	ostringstream ssScore;
 	ssScore << "Score : " << score;
 
 	Text lblScore;
-	lblScore.setCharacterSize(30);
-	lblScore.setPosition(50, 200);
+	lblScore.setCharacterSize(40);
 	lblScore.setFont(font);
 	lblScore.setString(ssScore.str());
 
@@ -71,6 +76,8 @@ int main() {
 
 		deltaTime = clock.restart().asSeconds();
 
+		// view.reset(FloatRect(view_x, 0, 2 * WIDTH * HEIGHT));
+
 		while (app.pollEvent(e)) {
 			switch (e.type)
 			{
@@ -82,12 +89,17 @@ int main() {
 				break;	// 화면 조정 시
 			}
 		}
-
 		app.setView(view);
-		text.setPosition(view.getRotation(), 100);
+		text.setPosition(view.getCenter().x+300, 10);
+		HPtext.setPosition(view.getCenter().x + 300, 150);
+		lblScore.setPosition(view.getCenter().x + 190, 80);
 		if(player.getPositionX()<=WIDTH * 0.5) view.setCenter(WIDTH * 0.5, HEIGHT * 0.5);
 		else view.setCenter(player.getPositionX(), HEIGHT * 0.5);
-
+		if (player.dead) {
+			string hpStr = "HP X " + player.hp;
+			HPtext.setString(hpStr);
+			interval = 0;
+		}
 		for (int i = 0; i < coinVec.size(); i++) {
 			if (player.isCollidingWithCoin(coinVec[i])) {
 				coinVec[i]->setPos(Vector2f(40000, 40000));

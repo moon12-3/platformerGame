@@ -12,6 +12,7 @@ class GameTile
 	Texture texture;
 public:
 	GameTile(std::string, float, float, char);
+	GameTile();
 	void setUpSprite(std::string);
 	Collider GetCollider() { return Collider(block); }
 	char tileType;

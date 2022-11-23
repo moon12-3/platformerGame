@@ -5,8 +5,10 @@
 
 #define WIDTH 800
 #define HEIGHT 600
-#define W 32
+#define W 64
 #define H 12
+
+#define GRAVITY 8
 
 using namespace std;
 

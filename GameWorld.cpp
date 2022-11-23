@@ -10,15 +10,6 @@ GameWorld::GameWorld(Player* p) {
 	// createMap("Resources/Map/map1.png");
 }
 
-void GameWorld::setUpInitialState() {
-	exitPos = Vector2i(W-2, H-2);
-}
-
-void GameWorld::setUpEnemyPositions() {
-	enemyPos.clear();
-	enemyPos.push_back(Vector2i(0, 2));
-}
-
 void GameWorld::setUpTiles() {
 	tiles.clear();
 	vector<GameTile*> row;
@@ -27,7 +18,10 @@ void GameWorld::setUpTiles() {
 		for (int j = 0; j < W; j++) {
 			//tileType = lines.at(i)[j];
 			tileType = tile[i][j];
-			GameTile* tile = new GameTile("Resources/Images/Map.png", CELL_SIZE * j, CELL_SIZE * i, tileType);
+			GameTile* tile;
+			//if ((tiles[i][j]->tileType == '0')) tile = new GameTile();
+			//else 
+			tile = new GameTile("Resources/Images/Map.png", CELL_SIZE * j, CELL_SIZE * i, tileType);
 			row.push_back(tile);
 		}
 		tiles.push_back(row);
@@ -36,9 +30,9 @@ void GameWorld::setUpTiles() {
 
 void GameWorld::draw(RenderWindow& app)
 {
-
 	for (int i = 0; i < H; i++) {
 		for (int j = 0; j < W; j++) {
+			if ((tiles[i][j]->tileType == '0')) continue;
 			app.draw(tiles[i][j]->block);
 			Collider c = p->getCollider();
 			Vector2f direction;
