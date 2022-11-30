@@ -29,15 +29,21 @@ int main() {
 	View view(Vector2f(0.0f, 0.0f), Vector2f(WIDTH, HEIGHT));
 	app.setFramerateLimit(60);
 
-	Texture map_texture;
-	map_texture.loadFromFile("Resources/Images/block.png");
+	RectangleShape deadSprite;
 
+	Music music;
+	music.openFromFile("Resources/Audio/superMarioOST.ogg");
+	music.setVolume(50);
+	//music.play();
+
+	deadSprite.setPosition(-1000, -1000);
+	deadSprite.setSize(Vector2f(WIDTH, HEIGHT));
+	deadSprite.setFillColor(Color(0, 0, 0));
 	// PlayerW
 	Player player;
 	Clock clock;
 	// Coin
 	vector<Coin*> coinVec;
-	vector<Enemy> enemy;
 	Coin coin1(Vector2f(20, 20));
 	Coin coin2(Vector2f(20, 20));
 	coinVec.push_back(&coin1);
@@ -55,8 +61,10 @@ int main() {
 	Text text("00:00", font, 50);
 	text.setFont(font);
 
-	Text HPtext("HP X "+player.hp, font, 50);
+	Text HPtext("HP x "+player.hp, font, 50);
 	HPtext.setFont(font);
+	ostringstream HP;
+	HP << "HP x " << player.hp;
 
 	ostringstream ssScore;
 	ssScore << "Score : " << score;
@@ -73,6 +81,10 @@ int main() {
 		interval += time;
 		string t = std::to_string((int)interval)+"s";
 		text.setString(t);
+
+		if (!music.getStatus()) {
+			music.play();
+		}
 
 		deltaTime = clock.restart().asSeconds();
 
@@ -91,14 +103,24 @@ int main() {
 		}
 		app.setView(view);
 		text.setPosition(view.getCenter().x+300, 10);
-		HPtext.setPosition(view.getCenter().x + 300, 150);
 		lblScore.setPosition(view.getCenter().x + 190, 80);
-		if(player.getPositionX()<=WIDTH * 0.5) view.setCenter(WIDTH * 0.5, HEIGHT * 0.5);
+		HPtext.setPosition(-650, -750);
+		if(player.deathScreen) view.setCenter(-600, -700);
+		else if(player.getPositionX()<=WIDTH * 0.5) view.setCenter(WIDTH * 0.5, HEIGHT * 0.5);
 		else view.setCenter(player.getPositionX(), HEIGHT * 0.5);
 		if (player.dead) {
-			string hpStr = "HP X " + player.hp;
-			HPtext.setString(hpStr);
+			deadSprite.setSize(Vector2f(WIDTH, HEIGHT));
+			deadSprite.setFillColor(Color(0, 0, 0));
 			interval = 0;
+		}
+		if (player.deathScreen) {
+			HP.str("");
+			HP << "HP x " << player.hp;
+			HPtext.setString(HP.str());
+			if ((int)interval > 1) {
+				interval = 0;
+				player.deathScreen = false;
+			}
 		}
 		for (int i = 0; i < coinVec.size(); i++) {
 			if (player.isCollidingWithCoin(coinVec[i])) {
@@ -116,6 +138,8 @@ int main() {
 		coin2.draw(app);
 		app.draw(lblScore);
 		player.draw(app);
+		app.draw(deadSprite);
+		app.draw(HPtext);
 
 		app.display();
 

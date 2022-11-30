@@ -9,6 +9,8 @@
 #include<fstream>
 #include<iostream>
 #include<string>
+#include"Enemy.hpp"
+#include"Global.hpp"
 
 using namespace sf;
 using namespace std;
@@ -20,8 +22,10 @@ class GameWorld
 	void setUpTiles();
 	void createMap(std::string);
 	char tileType;
+	int i;
 	std::vector<std::string> lines;
 	Player* p;
+	vector<Enemy*> goombas;
 	string tile[H] = {
 		"0000000000000000000000000000000000000000000000000000000000000000",
 		"0000000000000000000000000000000000000000000000000000000000000000",

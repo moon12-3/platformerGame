@@ -9,6 +9,7 @@
 #define H 12
 
 #define GRAVITY 8
+#define SPEED 7
 
 using namespace std;
 

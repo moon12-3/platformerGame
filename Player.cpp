@@ -17,15 +17,15 @@ Player::Player() :
 	row(0),
 	dead(false),
 	deathTimer(23),
-	hp(3)
+	hp(3),
+	deathScreen(false)
 {
 	texture.loadFromFile("Resources/Images/Player.png");
+	buffer.loadFromFile("Resources/Audio/jump.ogg");
+	jumpSound.setBuffer(buffer);
 	sprite.setSize(Vector2f(CELL_SIZE, CELL_SIZE));
 	sprite.setTexture(&texture);
 	sprite.setPosition(round(x), round(y));
-	deadSprite.setSize(Vector2f(WIDTH, HEIGHT));
-	deadSprite.setFillColor(Color(0, 0, 0));
-	deadSprite.setPosition(0, 0);
 }
 
 void Player::draw(sf::RenderWindow& i_window)
@@ -39,12 +39,13 @@ void Player::draw(sf::RenderWindow& i_window)
 		dead = true;
 		die();
 		
-		if (sprite.getPosition().y > HEIGHT + 100) {
+		if (sprite.getPosition().y > HEIGHT + 200) {
 			sprite.setPosition(round(x), round(y));
 			dead = false;
 			hp--;
 			texture.loadFromFile("Resources/Images/Player.png");
 			deathTimer = 23;
+			deathScreen = true;
 		}
 	}
 	//drawTo();
@@ -59,7 +60,11 @@ void Player::update() {
 		velocity.x += SPEED;
 
 	if (Keyboard::isKeyPressed(Keyboard::Up)) {
+		isJumping = true;
+	}
+	if(isJumping) {
 		if (onGround) {
+			jumpSound.play();
 			velocity.y = -JUMP_SPEED;
 			jumpTimer = JUMP_SPEED + 15;
 		}
@@ -82,15 +87,10 @@ void Player::update() {
 	else
 		velocity.y = GRAVITY;
 
-	if (velocity.x == 0.0f) {
-		row = 0;
-	}
-	else {
-		row = 1;
+	
+	if (velocity.x > 0.0f) faceRight = true;
+	else faceRight = false;
 
-		if (velocity.x > 0.0f) faceRight = true;
-		else faceRight = false;
-	}
 	onGround = false;
 	sprite.move(velocity);
 }
@@ -131,35 +131,4 @@ void Player::onCollision(Vector2f direction)
 		// Collision Top
 		velocity.y = 0.0f;
 	}
-}
-
-void Player::drawTo()
-{
-	if (Keyboard::isKeyPressed(Keyboard::Space)) {
-		if (onGround && !isJumping) {
-			isJumping = true;
-			onGround = false;
-		}
-	}
-
-	if (Keyboard::isKeyPressed(Keyboard::Right)) {
-		sprite.move(Vector2f(SPEED, 0));
-	}
-	else if (Keyboard::isKeyPressed(Keyboard::Left) && sprite.getPosition().x >= 0) {
-		sprite.move(Vector2f(-SPEED, 0));
-	}
-	/*else if (Keyboard::isKeyPressed(Keyboard::Up) && sprite.getPosition().x >= 0) {
-		sprite.move(Vector2f(0, -SPEED));
-	}
-	else if (Keyboard::isKeyPressed(Keyboard::Down) && sprite.getPosition().x >= 0) {
-		sprite.move(Vector2f(0, SPEED));
-	}*/
-	if (!onGround && isJumping == false) {
-		sprite.move(0, GRAVITY);
-	}
-	else if (onGround) {
-		sprite.move(0, 0);
-		// canJump = true;
-	}
-	onGround = false;
 }

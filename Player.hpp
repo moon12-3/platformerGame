@@ -4,8 +4,8 @@
 #include "Collider.hpp"
 #include "Coin.hpp"
 #include "GameTile.hpp"
+#include "SFML/Audio.hpp"
 
-#define SPEED 7
 #define JUMP_SPEED 9
 
 using namespace sf;
@@ -25,12 +25,15 @@ public :
 	bool faceRight;
 	unsigned int row;
 	bool dead;
+	bool deathScreen;
 	Vector2f velocity;
 	Vector2u textureSize;
 	Texture texture;
 	RectangleShape sprite;
-	RectangleShape deadSprite;
 	Clock game_clock;
+
+	SoundBuffer buffer;
+	Sound jumpSound;
 public :
 	Player();
 	void die();
@@ -41,8 +44,6 @@ public :
 	float getPositionX() { return sprite.getPosition().x+CELL_SIZE/2; }
 	Vector2f getPosition() { return sprite.getPosition(); }
 	Collider getCollider() { return Collider(sprite); }
-	void drawTo();
-	void move();
 	int getY() {
 		return sprite.getPosition().y;
 	}
