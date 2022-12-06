@@ -34,6 +34,8 @@ public :
 
 	SoundBuffer buffer;
 	Sound jumpSound;
+	SoundBuffer buffer2;
+	Sound deadSound;
 public :
 	Player();
 	void die();

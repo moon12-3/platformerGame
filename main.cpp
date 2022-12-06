@@ -25,22 +25,21 @@ void ResizeView(RenderWindow& app, View& view)	// 화면 크기 변경 시 조절
 }
 
 int main() {
-	RenderWindow app(VideoMode(WIDTH, HEIGHT), "platformer", Style::Resize | Style::Close);
+	RenderWindow app(VideoMode(WIDTH, HEIGHT), "mario game", Style::Resize | Style::Close);
 	View view(Vector2f(0.0f, 0.0f), Vector2f(WIDTH, HEIGHT));
 	app.setFramerateLimit(60);
 
 	RectangleShape deadSprite;
 
 	Music music;
-	music.openFromFile("Resources/Audio/superMarioOST.ogg");
+	music.openFromFile("Resources/Audio/superMarioOST.ogg");	// 배경음악
 	music.setVolume(50);
-	//music.play();
 
-	deadSprite.setPosition(-1000, -1000);
-	deadSprite.setSize(Vector2f(WIDTH, HEIGHT));
-	deadSprite.setFillColor(Color(0, 0, 0));
-	// PlayerW
-	Player player;
+	deadSprite.setPosition(-1000, -1000);	// 죽었을 때 나오는 검은 화면
+	deadSprite.setSize(Vector2f(WIDTH, HEIGHT));	// 화면 크기만큼의 size로
+	deadSprite.setFillColor(Color(0, 0, 0));	// 검정색
+	// Player 생성
+	Player player;	
 	Clock clock;
 	// Coin
 	vector<Coin*> coinVec;
@@ -75,6 +74,7 @@ int main() {
 	lblScore.setString(ssScore.str());
 
 	while (app.isOpen()) {
+		gameWorld.createEnemy();
 		Event e;
 		float time = dtClock.getElapsedTime().asSeconds();
 		Time elapsed = dtClock.restart();
@@ -82,7 +82,9 @@ int main() {
 		string t = std::to_string((int)interval)+"s";
 		text.setString(t);
 
-		if (!music.getStatus()) {
+		if (player.dead)
+			music.stop();
+		else if (!music.getStatus()) {
 			music.play();
 		}
 
@@ -107,10 +109,11 @@ int main() {
 		HPtext.setPosition(-650, -750);
 		if(player.deathScreen) view.setCenter(-600, -700);
 		else if(player.getPositionX()<=WIDTH * 0.5) view.setCenter(WIDTH * 0.5, HEIGHT * 0.5);
+		else if(player.getPositionX()>= W_END) view.setCenter(W_END, HEIGHT * 0.5);
 		else view.setCenter(player.getPositionX(), HEIGHT * 0.5);
 		if (player.dead) {
-			deadSprite.setSize(Vector2f(WIDTH, HEIGHT));
-			deadSprite.setFillColor(Color(0, 0, 0));
+			//deadSprite.setSize(Vector2f(WIDTH, HEIGHT));
+			//deadSprite.setFillColor(Color(0, 0, 0));
 			interval = 0;
 		}
 		if (player.deathScreen) {

@@ -5,8 +5,9 @@
 
 #define WIDTH 800
 #define HEIGHT 600
-#define W 64
+#define W 128
 #define H 12
+#define W_END W * 50 - WIDTH * 0.5
 
 #define GRAVITY 8
 #define SPEED 7

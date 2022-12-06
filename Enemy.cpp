@@ -1,6 +1,5 @@
 #include "Enemy.hpp"
 Enemy::Enemy(float i_x, float i_y) :
-	dead(false),
 	x(i_x),
 	y(i_y),
 	deathTimer(15),
@@ -14,18 +13,22 @@ Enemy::Enemy(float i_x, float i_y) :
 
 void Enemy::draw(RenderWindow& app)
 {
+	sprite.setTexture(&texture);
 	app.draw(sprite);
-	if (!dead) {
+	if(!dead) {
 		update();
 	}
 
 	if (dead) {
-		sprite.setSize(Vector2f(CELL_SIZE, CELL_SIZE/4));
+		texture.loadFromFile("Resources/Images/enemyDeath.png");
+		dead = true;
 	}
 }
 
 void Enemy::update() {
-	velocity.x = -SPEED*direction/2;
-	velocity.y = GRAVITY;
-	sprite.move(velocity);
+	if(getPositionX()<=0)
+		direction = -1;
+	velocity.x = -SPEED * direction / 2;	// 왼쪽으로 움직임
+	velocity.y = GRAVITY;	// 중력 작동
+	sprite.move(velocity);	
 }

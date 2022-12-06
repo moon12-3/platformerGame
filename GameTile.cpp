@@ -11,8 +11,7 @@ GameTile::GameTile(std::string textureName, float x, float y, char tileType) {
 	//block.setOrigin(Vector2f(CELL_SIZE, CELL_SIZE)/2.0f);
 }
 
-GameTile::GameTile()
-{}
+GameTile::GameTile(){}
 
 void GameTile::setUpSprite(std::string textureName)
 {
@@ -24,11 +23,25 @@ void GameTile::setUpSprite(std::string textureName)
 	case '0' : 
 		block.setTextureRect(IntRect(50, 0, 50, 50));
 		break;
-	case '1' :
+	case '1' :	// 바닥
 		block.setTextureRect(IntRect(100, 0, 50, 50));
 		break;
 	case '2' :
+		block.setTextureRect(IntRect(500, 50, 100, 50));
+		//block.setSize(Vector2f(CELL_SIZE * 2, CELL_SIZE));
+		break;
+	case '3':
+		block.setTextureRect(IntRect(500, 0, 100, 50));
+		//block.setSize(Vector2f(CELL_SIZE * 2, CELL_SIZE));
+		break;
+	case '4':	// 네모난 벽돌
+		block.setTextureRect(IntRect(150, 0, 50, 50));
+		break;
+	case '5':	// 벽돌
 		block.setTextureRect(IntRect(0, 0, 50, 50));
+		break;
+	case '9':
+		block.setTextureRect(IntRect(50, 0, 50, 50));
 		break;
 	case 'a' :
 		block.setTextureRect(IntRect(50, 50, 100, 50));

@@ -12,6 +12,7 @@ public :
 	Collider(RectangleShape&);
 
 	void Move(float dx, float dy) { body.move(dx, dy); }
+	void EnemyMove(Collider& other, int*);
 
 	bool CheckCollision(Collider& other, Vector2f& direction, float push);
 	Vector2f GetPosition() { return body.getPosition(); }

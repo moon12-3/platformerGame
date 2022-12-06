@@ -9,14 +9,12 @@ using namespace sf;
 
 class Enemy : public Player
 {
-	bool dead;
-	RectangleShape sprite;
 	Texture texture;
 	Vector2f velocity;
 	float x, y;
 	int deathTimer;
-	int direction;
 public :
+	int direction;
 	Enemy(float, float);
 	void draw(RenderWindow& app);
 	Collider getCollider() { return Collider(sprite); }
